@@ -63,12 +63,16 @@ Remove-Item -Path (Join-Path $backup '.fseventsd') -Recurse -Force -ErrorAction 
 # 4. Stick vollstaendig neu aufsetzen: eine Partition ueber die ganze
 #    Kapazitaet, formatiert als exFAT.
 Write-Host '==> Stick wird neu partitioniert und formatiert (exFAT)'
-Get-Disk -Number $disk.Number | Remove-StoragePool -ErrorAction SilentlyContinue
+# Clear-Disk entfernt saemtliche vorhandene Partitionen des Datentraegers.
 Clear-Disk -Number $disk.Number -RemoveData -RemoveOEM -Confirm:$false
 $newPartition = New-Partition -DiskNumber $disk.Number -UseMaximumSize -AssignDriveLetter
 Format-Volume -Partition $newPartition -FileSystem exFAT -NewFileSystemLabel 'MACREC' -Force -Confirm:$false | Out-Null
 
 $newLetter = (Get-Partition -DiskNumber $disk.Number | Select-Object -First 1).DriveLetter
+if (-not $newLetter) {
+	Write-Host 'FEHLER: Die neue Partition hat keinen Laufwerksbuchstaben.' -ForegroundColor Red
+	exit 1
+}
 
 # 5. Dateien zurueckkopieren.
 Write-Host "==> Dateien werden zurueckkopiert nach ${newLetter}:\"
