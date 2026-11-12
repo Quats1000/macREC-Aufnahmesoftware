@@ -23,7 +23,7 @@
 > macREC ist in Entwicklung und **noch nicht für den Einsatz in Prüfungen
 > freigegeben**. Die Oberfläche, der Aufnahmeablauf und die Dateiablage können
 > sich jederzeit ändern. Bitte vor einem echten Prüfungseinsatz testen und
-> Rückmeldungen an [niklaslegler.at](https://niklaslegler.at) senden.
+> Rückmeldungen an [niklaslegler.at/contact](https://niklaslegler.at/contact) senden.
 
 ---
 
