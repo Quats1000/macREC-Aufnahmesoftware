@@ -300,3 +300,10 @@ goes to me, not to a project fund.
 ---
 
 (C) 2026 Niklas Legler – [niklaslegler.at](https://niklaslegler.at)
+
+---
+
+macOS and Mac are trademarks of Apple Inc. macREC is an independent project by
+Niklas Legler and is **not affiliated with, endorsed or sponsored by Apple
+Inc.** in any way. The name "macREC" comes from *mac*OS, the operating system
+it was built for, and *REC* for recording.
