@@ -264,7 +264,7 @@ network access.
 ### Building the USB image
 
 ```bash
-./tools/build-img.sh 512          # 512 MB, creates an exFAT and a FAT32 variant
+./tools/build-img.sh 64           # 64 MB, creates an exFAT and a FAT32 variant
 sudo dd if=dist/macREC-usb.img of=/dev/rdisk4 bs=4m
 ```
 
