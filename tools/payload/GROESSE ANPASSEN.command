@@ -16,8 +16,40 @@ if [ -z "${MACREC_RELOCATED:-}" ]; then
 	RELOC_DIR="$(mktemp -d)"
 	cp "$0" "$RELOC_DIR/groesse-anpassen.sh"
 	chmod +x "$RELOC_DIR/groesse-anpassen.sh"
-	export MACREC_RELOCATED=1 MACREC_SOURCE
-	exec bash "$RELOC_DIR/groesse-anpassen.sh"
+
+	if [ "$(id -u)" -eq 0 ]; then
+		export MACREC_RELOCATED=1 MACREC_SOURCE
+		exec bash "$RELOC_DIR/groesse-anpassen.sh"
+	fi
+
+	# "diskutil eraseDisk" braucht Administratorrechte. Erst bestätigen
+	# lassen, dann per osascript als Admin neu starten; die Ausgabe der
+	# Admin-Sitzung landet in einer Logdatei und wird danach angezeigt.
+	echo "macREC - Groesse anpassen"
+	echo "======================="
+	echo "Der Stick wird vollstaendig neu eingerichtet - alle Daten werden geloescht."
+	printf "Fortfahren? [j/N] "
+	read -r ANSWER
+	case "$ANSWER" in
+		[jJ] | [yY]) ;;
+		*) echo "Abgebrochen."; exit 0 ;;
+	esac
+
+	LOGFILE="$(mktemp)"
+	# Werte POSIX-gerecht in Anfuehrungszeichen setzen, damit Pfade mit
+	# Leerzeichen in der osascript-Zeile heil ankommen.
+	shquote() {
+		printf "'%s'" "$(printf '%s' "$1" | sed "s/'/'\\\\''/g")"
+	}
+	INNER="MACREC_RELOCATED=1 MACREC_CONFIRMED=1 MACREC_SOURCE=$(shquote "$MACREC_SOURCE") bash $(shquote "$RELOC_DIR/groesse-anpassen.sh") > $(shquote "$LOGFILE") 2>&1"
+	if ! osascript -e "do shell script \"$(printf '%s' "$INNER" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')\" with administrator privileges"; then
+		echo "Abgebrochen - Administratorrechte wurden verweigert." >&2
+		rm -f "$LOGFILE"
+		exit 1
+	fi
+	cat "$LOGFILE"
+	rm -f "$LOGFILE"
+	exit 0
 fi
 
 # Pfad zum Volume: aus der Umgebung (vor der Verlagerung gemerkt) oder -
@@ -58,12 +90,14 @@ fi
 
 echo "Stick:  $WHOLE ($SIZE)"
 echo "Der Stick wird vollstaendig neu eingerichtet."
-printf "Fortfahren? [j/N] "
-read -r ANSWER
-case "$ANSWER" in
-	[jJ] | [yY]) ;;
-	*) echo "Abgebrochen."; exit 0 ;;
-esac
+if [ -z "${MACREC_CONFIRMED:-}" ]; then
+	printf "Fortfahren? [j/N] "
+	read -r ANSWER
+	case "$ANSWER" in
+		[jJ] | [yY]) ;;
+		*) echo "Abgebrochen."; exit 0 ;;
+	esac
+fi
 echo
 
 # 2. Dateien, die erhalten bleiben muessen, in den Temp-Bereich sichern.
@@ -97,7 +131,11 @@ try:
 except Exception:
     sys.exit(0)
 whole = sys.argv[1].replace("/dev/", "")
+# Nur Partitionen des Ziel-Whole-Disk beruecksichtigen - ein anderer
+# angeschlossener Stick mit MACREC-Label darf nicht gewinnen.
 for entry in data.get("AllDisksAndPartitions", []):
+    if entry.get("DeviceIdentifier") != whole:
+        continue
     for part in entry.get("Partitions", []):
         if part.get("VolumeName") == "MACREC" and part.get("MountPoint"):
             print(part["MountPoint"])

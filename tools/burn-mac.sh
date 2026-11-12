@@ -20,7 +20,20 @@ if [ ! -f "$IMG" ]; then
 	exit 1
 fi
 
-RDEVICE="/dev/rdisk$(basename "$DEVICE" | sed 's/disk//')"
+# Zielsystem normalisieren: disk4, rdisk4, /dev/disk4 und /dev/rdisk4
+# werden auf /dev/diskN (zum Pruefen) und /dev/rdiskN (zum Schreiben)
+# gebracht. Ohne das fuehrt "rdisk4" zu "rdiskr4".
+BASE="$(basename "$DEVICE")"
+DISK="${BASE#rdisk}"
+DISK="${DISK#disk}"
+case "$DISK" in
+	'' | *[!0-9]*)
+		echo "FEHLER: $DEVICE ist kein gueltiges Geraet - Aufruf: $0 /dev/diskN" >&2
+		exit 2
+		;;
+esac
+DEVICE="/dev/disk$DISK"
+RDEVICE="/dev/rdisk$DISK"
 echo "==> Ziel: $DEVICE"
 diskutil list "$DEVICE" 2>/dev/null | head -6 || true
 echo

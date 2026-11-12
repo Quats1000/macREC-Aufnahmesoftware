@@ -24,6 +24,12 @@ pub struct Storage {
     pub screens_dir: PathBuf,
 }
 
+/// Windows reservierte Geraetenamen - duerfen nicht als Ordnername dienen.
+const WINDOWS_RESERVED: [&str; 22] = [
+    "CON", "PRN", "AUX", "NUL", "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8",
+    "COM9", "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9",
+];
+
 /// Entfernt Zeichen, die in Dateinamen nicht erlaubt sind.
 pub fn sanitize_name(raw: &str) -> String {
     let cleaned: String = raw
@@ -38,7 +44,20 @@ pub fn sanitize_name(raw: &str) -> String {
     if trimmed.is_empty() {
         "Unbekannt".to_owned()
     } else {
-        trimmed
+        // Windows lehnt auch "CON.txt" ab - es zaehlt der Name vor der
+        // ersten Erweiterung. Der Unterstrich kommt an den Basisnamen.
+        let (base, ext) = match trimmed.split_once('.') {
+            Some((base, ext)) => (base, Some(ext)),
+            None => (trimmed.as_str(), None),
+        };
+        if WINDOWS_RESERVED.contains(&base.to_ascii_uppercase().as_str()) {
+            match ext {
+                Some(ext) => format!("{base}_.{ext}"),
+                None => format!("{base}_"),
+            }
+        } else {
+            trimmed
+        }
     }
 }
 
@@ -157,6 +176,16 @@ mod tests {
         assert_eq!(sanitize_name("  "), "Unbekannt");
         assert_eq!(sanitize_name("Anna: Maria"), "Anna_ Maria");
         assert_eq!(sanitize_name(""), "Unbekannt");
+    }
+
+    #[test]
+    fn windows_reserved_names_get_suffix() {
+        assert_eq!(sanitize_name("CON"), "CON_");
+        assert_eq!(sanitize_name("con"), "con_");
+        assert_eq!(sanitize_name("Lpt1"), "Lpt1_");
+        // Auch mit Erweiterung reserviert.
+        assert_eq!(sanitize_name("NUL.txt"), "NUL_.txt");
+        assert_eq!(sanitize_name("Konrad"), "Konrad");
     }
 
     #[test]

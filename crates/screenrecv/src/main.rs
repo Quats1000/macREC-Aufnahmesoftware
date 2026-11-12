@@ -138,6 +138,8 @@ impl ScreenRecvApp {
             storage_root: prepared.root.display().to_string(),
             device: manifest::device_name(),
         };
+        self.status = None;
+
         if let Err(err) = self.manifest.write(&prepared.exam_dir) {
             self.status = Some((format!("info.json nicht schreibbar: {err}"), true));
         }
@@ -146,12 +148,16 @@ impl ScreenRecvApp {
         self.storage = Some(prepared);
         self.count = 0;
         self.screen = Screen::Recording;
-        self.status = None;
     }
 
     fn stop_recording(&mut self) {
         if let Some(mut recorder) = self.recorder.take() {
             recorder.stop();
+            // Nach dem Stopp noch gemeldete Ereignisse verarbeiten, damit der
+            // Zaehler und die Info-Datei den letzten Screenshot enthalten.
+            while let Ok(event) = recorder.rx.try_recv() {
+                self.handle_event(event);
+            }
         }
         self.finalize_manifest();
         self.quit = true;
@@ -431,57 +437,60 @@ impl ScreenRecvApp {
     // ----------------------------------------------------------------- Aufnahme
 
     fn poll_events(&mut self) {
-        let Some(recorder) = &self.recorder else { return };
-        let mut pending = Vec::new();
-        while let Ok(event) = recorder.rx.try_recv() {
-            pending.push(event);
+        let Some(recorder) = self.recorder.as_ref() else { return };
+        let events: Vec<Event> = recorder.rx.try_iter().collect();
+        for event in events {
+            self.handle_event(event);
         }
+    }
 
-        for event in pending {
-            match event {
-                Event::Captured {
-                    index,
-                    path,
-                    bytes,
-                    width,
-                    height,
-                    at,
-                    ..
-                } => {
-                    self.count = index + 1;
-                    self.last_file = path
-                        .file_name()
-                        .map(|name| name.to_string_lossy().to_string());
-                    self.status = Some((format!("Aufnahme gespeichert ({bytes} Bytes)."), false));
+    /// Verarbeitet ein Ereignis des Aufnahme-Threads.
+    fn handle_event(&mut self, event: Event) {
+        match event {
+            Event::Captured {
+                index,
+                path,
+                bytes,
+                width,
+                height,
+                at,
+                ..
+            } => {
+                self.count = index + 1;
+                self.last_file = path
+                    .file_name()
+                    .map(|name| name.to_string_lossy().to_string());
+                self.status = Some((format!("Aufnahme gespeichert ({bytes} Bytes)."), false));
 
-                    if let Some(storage) = &self.storage {
-                        self.manifest.screenshots = self.count;
-                        self.manifest.last_screenshot_at = Some(at.clone());
-                        let _ = self.manifest.write(&storage.exam_dir);
-                        let entry = LogEntry {
-                            index,
-                            timestamp: at,
-                            file: path
-                                .file_name()
-                                .map(|name| name.to_string_lossy().to_string())
-                                .unwrap_or_default(),
-                            bytes,
-                            width,
-                            height,
-                        };
-                        let _ = manifest::append_log(&storage.exam_dir, &entry);
-                    }
+                if let Some(storage) = &self.storage {
+                    self.manifest.screenshots = self.count;
+                    self.manifest.last_screenshot_at = Some(at.clone());
+                    let _ = self.manifest.write(&storage.exam_dir);
+                    let entry = LogEntry {
+                        index,
+                        timestamp: at,
+                        file: path
+                            .file_name()
+                            .map(|name| name.to_string_lossy().to_string())
+                            .unwrap_or_default(),
+                        bytes,
+                        width,
+                        height,
+                    };
+                    let _ = manifest::append_log(&storage.exam_dir, &entry);
                 }
-                Event::Failed { message, .. } => {
-                    self.status = Some((format!("Aufnahme fehlgeschlagen: {message}"), true));
-                }
+            }
+            Event::Failed { message } => {
+                self.status = Some((format!("Aufnahme fehlgeschlagen: {message}"), true));
             }
         }
     }
 
     /// Verhindert, dass das Fenster geschlossen wird - die Aufnahme laeuft weiter.
     fn handle_close_request(&mut self, ctx: &egui::Context) {
-        if self.screen != Screen::Recording {
+        // Wenn quit gesetzt ist, wartet die App auf ihr eigenes Close - ein
+        // Abbrechen hier wuerde das Beenden dauerhaft blockieren.
+        if self.quit || self.screen != Screen::Recording {
             return;
         }
         let requested = ctx.input(|input| input.viewport().close_requested());

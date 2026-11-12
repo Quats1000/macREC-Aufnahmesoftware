@@ -63,6 +63,8 @@ mod tests {
         // In der Mitte unten muss sich die Bildfarbe veraendert haben.
         let middle = stamped.get_pixel(800, 860);
         assert!(middle.0[0] > 40 || middle.0[1] > 40 || middle.0[2] > 40);
-        stamped.save("/tmp/opencode/watermark_test.png").unwrap();
+        stamped
+            .save(std::env::temp_dir().join("screenrecv-watermark-test.png"))
+            .unwrap();
     }
 }

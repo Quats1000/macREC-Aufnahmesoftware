@@ -16,10 +16,14 @@ if [ -z "$DEVICE" ]; then
 	echo "Aufruf: $0 /dev/diskN" >&2
 	exit 2
 fi
+# rdisk-Schreibweise (z. B. /dev/rdisk4) auf das Block-Device normalisieren.
+DEVICE="$(echo "$DEVICE" | sed 's|/dev/rdisk|/dev/disk|')"
 
 echo "==> Groesse wird angepasst ($DEVICE)"
 
-# 1. Aktuell gemountetes Volume des Sticks finden (Label MACREC).
+# 1. Aktuell gemountetes Volume des Sticks finden (Label MACREC). Gefiltert
+#    auf den Ziel-Datentraeger - ein zweiter angeschlossener Stick mit dem
+#    gleichen Label darf nicht versehentlich gesichert werden.
 MOUNT=""
 for attempt in 1 2 3 4 5; do
 	MOUNT="$(diskutil list -plist | python3 -c '
@@ -28,13 +32,15 @@ try:
     data = plistlib.loads(sys.stdin.buffer.read().decode())
 except Exception:
     sys.exit(0)
+whole = sys.argv[1].replace("/dev/", "")
 for entry in data.get("AllDisksAndPartitions", []):
-    # Partitionen liegen verschachtelt unter dem Whole-Disk-Eintrag.
+    if entry.get("DeviceIdentifier") != whole:
+        continue
     for part in entry.get("Partitions", []):
         if part.get("VolumeName") == "MACREC" and part.get("MountPoint"):
             print(part["MountPoint"])
             sys.exit(0)
-')"
+' "$DEVICE")"
 	[ -n "$MOUNT" ] && [ -d "$MOUNT" ] && break
 	sleep 1
 done
