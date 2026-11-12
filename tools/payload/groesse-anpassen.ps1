@@ -7,12 +7,14 @@
 # Achtung: alle Daten auf dem Stick werden geloescht.
 $ErrorActionPreference = 'Stop'
 
-# Administratorrechte pruefen und bei Bedarf mit Hoeherfuehrung neu starten.
-# Wichtig: das Skript laeuft vom Stick aus und wuerde das Volume blockieren.
-# Deshalb wird es vor der Formatierung nach %TEMP% kopiert und die Kopie
-# ausgefuehrt - dann ist der Stick frei.
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-$isRelocated = Test-Path -LiteralPath (Join-Path $env:TEMP 'macrec-relocated')
+
+# Das Skript laeuft vom Stick aus und wuerde das Volume blockieren - dann
+# scheitert Clear-Disk mit "the disk is in use". Deshalb wird es nach %TEMP%
+# kopiert und die Kopie ausgefuehrt; die Originaldatei wird dadurch frei.
+# Erkannt wird die Kopie an der Umgebungsvariable und am Pfad selbst.
+$isRelocated = ($env:MACREC_RELOCATED -eq '1') -or
+	($MyInvocation.MyCommand.Path -like (Join-Path $env:TEMP '*'))
 
 if (-not $isRelocated) {
 	$identity = [Security.Principal.WindowsIdentity]::GetCurrent()
@@ -25,13 +27,18 @@ if (-not $isRelocated) {
 		exit 0
 	}
 
-	# Nach %TEMP% kopieren und dort die eigentliche Arbeit erledigen.
-	$tempDir = Join-Path $env:TEMP 'macrec-relocated'
+	# Nach %TEMP% kopieren und dort die eigentliche Arbeit erledigen. Der
+	# Ordner bekommt einen eindeutigen Namen und wird danach wieder entfernt,
+	# damit ein spaeterer Start nicht an einem alten Marker scheitert.
+	$tempDir = Join-Path $env:TEMP ('macrec-relocated-' + [guid]::NewGuid().ToString('N'))
 	New-Item -ItemType Directory -Path $tempDir -Force | Out-Null
 	Copy-Item -Path (Join-Path $scriptDir 'groesse-anpassen.ps1') -Destination $tempDir -Force
 	Copy-Item -Path (Join-Path $scriptDir 'GROESSE ANPASSEN.cmd') -Destination $tempDir -Force
+	$env:MACREC_RELOCATED = '1'
 	& powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $tempDir 'groesse-anpassen.ps1')
-	exit $LASTEXITCODE
+	$code = $LASTEXITCODE
+	Remove-Item -Path $tempDir -Recurse -Force -ErrorAction SilentlyContinue
+	exit $code
 }
 
 Write-Host 'macREC - Groesse anpassen' -ForegroundColor Cyan
@@ -72,6 +79,15 @@ Remove-Item -Path (Join-Path $backup '.fseventsd') -Recurse -Force -ErrorAction 
 # 3. Stick vollstaendig neu aufsetzen: eine Partition ueber die ganze
 #    Kapazitaet, formatiert als exFAT.
 Write-Host '==> Stick wird neu partitioniert und formatiert (exFAT)'
+
+# Das Volume muss ausgehängt sein, sonst blockiert es die Partitionierung.
+Dismount-Volume -DriveLetter $volume.DriveLetter -Force -ErrorAction SilentlyContinue
+
+# Frisch angeschlossene USB-Sticks stehen oft auf offline oder read-only -
+# beides verhindert Clear-Disk.
+Set-Disk -Number $disk.Number -IsOffline $false -ErrorAction SilentlyContinue
+Set-Disk -Number $disk.Number -IsReadOnly $false -ErrorAction SilentlyContinue
+
 # Clear-Disk entfernt saemtliche vorhandene Partitionen des Datentraegers.
 Clear-Disk -Number $disk.Number -RemoveData -RemoveOEM -Confirm:$false
 $newPartition = New-Partition -DiskNumber $disk.Number -UseMaximumSize -AssignDriveLetter
