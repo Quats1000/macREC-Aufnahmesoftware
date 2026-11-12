@@ -1,6 +1,12 @@
 <div align="center">
 
-<img src="docs/logo.png" alt="macREC" width="120">
+<a href="https://buymeacoffee.com/niklaslegler">
+  <img src="https://img.shields.io/badge/Buy%20me%20a%20coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=white" alt="Buy me a coffee" height="28">
+</a>
+
+<br><br>
+
+<img src="docs/app-icon.png" alt="macREC" width="150">
 
 # macREC
 
