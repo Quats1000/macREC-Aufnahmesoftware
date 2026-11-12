@@ -135,8 +135,8 @@ von der Größe des Sticks. Das Abbild ist **nicht bootfähig**: es enthält nur
 Dateien. Nach dem Einstecken erscheinen die Dateien sofort im Datei-Manager.
 
 ```bash
-# Abbild bauen (512 MB, erzeugt zusätzlich die FAT32-Variante)
-./tools/build-img.sh 512
+# Abbild bauen (64 MB, erzeugt zusätzlich die FAT32-Variante)
+./tools/build-img.sh 64
 
 # Auf den Stick schreiben (jedes Brennwerkzeug funktioniert ebenso)
 sudo dd if=dist/macREC-usb.img of=/dev/rdisk4 bs=4m
@@ -189,7 +189,7 @@ go run ./crates/packager usb --root /Volumes/USB \
 ### USB-Abbild bauen
 
 ```bash
-./tools/build-img.sh 512          # 512 MB, erzeugt exFAT- und FAT32-Variante
+./tools/build-img.sh 64           # 64 MB, erzeugt exFAT- und FAT32-Variante
 ```
 
 ## Aufbau des Quellcodes
