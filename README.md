@@ -213,7 +213,7 @@ macREC ist ein **Work in Progress** – Rückmeldungen, Fehlerberichte und
 Verbesserungsvorschläge sind sehr willkommen.
 
 - [Issues auf GitHub](https://github.com/niklaslegler/macREC/issues)
-- E-Mail an [niklaslegler.at](https://niklaslegler.at)
+- E-Mail an [niklaslegler.at/contact](https://niklaslegler.at/contact)
 
 ## Danke
 
@@ -246,7 +246,7 @@ network access.
 > **Status: work in progress.** macREC is still under development and **not
 > yet approved for use in real exams**. The interface, the recording flow and
 > the file layout may change at any time. Please test it before any real use and
-> send feedback to [niklaslegler.at](https://niklaslegler.at).
+> send feedback to [niklaslegler.at/contact](https://niklaslegler.at/contact).
 
 | | |
 |---|---|
