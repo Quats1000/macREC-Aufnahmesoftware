@@ -22,8 +22,7 @@ Project Page: https://links.legl3r.com/macrec-pruefungssoftware
 
 > **Status: Work in Progress**
 >
-> macREC ist in Entwicklung und **noch nicht für den Einsatz in Prüfungen
-> freigegeben**. Die Oberfläche, der Aufnahmeablauf und die Dateiablage können
+> macREC ist in Entwicklung und auf unserer Seite **noch nicht für den Einsatz in Prüfungen freigegeben**. Die Oberfläche, der Aufnahmeablauf und die Dateiablage können
 > sich jederzeit ändern. Bitte vor einem echten Prüfungseinsatz testen und
 > Rückmeldungen an [niklaslegler.at/contact](https://niklaslegler.at/contact) senden.
 
@@ -233,11 +232,8 @@ Verbesserungsvorschläge sind sehr willkommen.
 
 <br><br>
 
-macREC wird von mir, Niklas, privat und ohne Geldgeber entwickelt. Wenn dir die
-Software hilft und du **mich persönlich** unterstützen magst – ich stehe nicht
-auf rosenden Beinen –, freue ich mich sehr über einen
-[Kaffee](https://buymeacoffee.com/niklaslegler). Die Spende landet bei mir,
-nicht in einem Projekt-Konto.
+macREC wird von mir, ohne Geldgeber entwickelt. Wenn dir die
+Software hilft und du **mich persönlich** unterstützen magst freue ich mich sehr über einen [Kaffee](https://buymeacoffee.com/niklaslegler).
 
 </div>
 
