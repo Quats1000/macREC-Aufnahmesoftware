@@ -1,0 +1,27 @@
+[package]
+name = "screenrecv"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "Pruefungsaufsicht - Dokumentiert Bildschirmaufnahmen waehrend einer Pruefung"
+
+[[bin]]
+name = "screenrecv"
+path = "src/main.rs"
+
+[dependencies]
+eframe = { version = "0.37", default-features = false, features = ["default_fonts", "system_fonts", "wgpu", "wayland", "x11", "clipboard"] }
+egui = "0.37"
+xcap = "0.9"
+image = { version = "0.25", default-features = false, features = ["png", "jpeg"] }
+ab_glyph = "0.2"
+imageproc = { version = "0.26", default-features = false, features = ["text"] }
+chrono = { version = "0.4", default-features = false, features = ["clock", "std"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+rand = "0.9"
+
+[build-dependencies]
+# Wird nur zur Laufzeit des Build-Skripts gebraucht (Icon in die EXE einbetten).
+winresource = "0.1"

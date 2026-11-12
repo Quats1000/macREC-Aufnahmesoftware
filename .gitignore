@@ -1,0 +1,16 @@
+# Build-Artefakte
+/target/
+/dist/
+/bin/
+
+# fertige Images (groesse Dateien, werden ueber tools/build-img.sh erzeugt)
+*.img
+*.dmg
+
+# macOS
+.DS_Store
+
+# Editoren
+*.swp
+.idea/
+.vscode/
