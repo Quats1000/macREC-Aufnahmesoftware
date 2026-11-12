@@ -234,8 +234,7 @@ Verbesserungsvorschläge sind sehr willkommen.
 <br><br>
 
 Wenn dir macREC hilft und du die Weiterentwicklung unterstützen möchtest,
-freue ich mich über einen [Kaffee](https://buymeacoffee.com/niklaslegler) –
-jede Spende geht direkt in die Entwicklung neuer Funktionen.
+freue ich mich über einen [Kaffee](https://buymeacoffee.com/niklaslegler)
 
 </div>
 
