@@ -147,9 +147,9 @@ sudo dd if=dist/macREC-usb.img of=/dev/rdisk4 bs=4m
 | `dist/macREC-usb.img` | exFAT | Standard – Windows und macOS |
 | `dist/macREC-usb-fat32.img` | FAT32 | ältere Windows-Systeme |
 
-Nach dem Brennen passt der Stick seine Größe selbst an: `GROESSE ANPASSEN.command`
-(macOS) bzw. `GROESSE ANPASSEN.cmd` (Windows) auf dem Stick einmal ausführen.
-Alternativ erledigen das die Brennskripte:
+Im Abbild liegen nur die Programme und die `README.txt`. Die Skripte zur
+Größenanpassung liegen im Repository und werden von den Brennskripten
+aufgerufen:
 
 ```bash
 # macOS: schreiben und Größe anpassen
@@ -205,6 +205,8 @@ go run ./crates/packager usb --root /Volumes/USB \
 | `tools/build-img.sh` | USB-Abbild erzeugen (MBR + exFAT/FAT32) |
 | `tools/burn-mac.sh` | Abbild schreiben und Größe anpassen (macOS) |
 | `tools/burn-windows.ps1` | Abbild schreiben und Größe anpassen (Windows) |
+| `tools/groesse-anpassen.sh` | Stick auf volle Kapazität erweitern (macOS) |
+| `tools/groesse-anpassen.ps1` | Stick auf volle Kapazität erweitern (Windows) |
 | `icon/Icon-1024x1024.png` | App-Icon |
 
 Schriften: DM Sans (SIL Open Font License 1.1). Logo & Icon: Niklas Legler.
@@ -265,9 +267,17 @@ sudo dd if=dist/macREC-usb.img of=/dev/rdisk4 bs=4m
 ```
 
 The image is **not bootable** – it only contains files, which show up in the
-file manager as soon as the stick is plugged in. After burning, run
-`GROESSE ANPASSEN.command` (macOS) or `GROESSE ANPASSEN.cmd` (Windows) on the
-stick once to make it use its full capacity.
+file manager as soon as the stick is plugged in. It contains the macOS app, the
+Windows program and the README. To let the stick use its full capacity, use the
+burning scripts – they write the image and resize the volume in one go:
+
+```bash
+# macOS
+sudo ./tools/burn-mac.sh /dev/disk4
+
+# Windows
+powershell -ExecutionPolicy Bypass -File tools\burn-windows.ps1 -Device 2
+```
 
 ### Support
 

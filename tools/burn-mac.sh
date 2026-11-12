@@ -1,10 +1,10 @@
 #!/bin/bash
 # Schreibt dist/macREC-usb.img auf ein USB-Stick und passt die Groesse an.
 #
-#   ./tools/burn-mac.sh /dev/disk4
+#   sudo ./tools/burn-mac.sh /dev/disk4
 #
-# Der Stick muss die Zielgroesse haben; das Skript passt die exFAT-Partition
-# anschliessend auf die volle Kapazitaet an.
+# Der Stick nutzt danach die volle Kapazitaet; die Programme liegen als
+# Dateien darauf und sind unter macOS wie Windows startbar.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -29,14 +29,10 @@ echo "==> Image wird geschrieben (das dauert je nach Stick ein paar Minuten)"
 sudo dd if="$IMG" of="$RDEVICE" bs=4m status=progress
 
 echo
-echo "==> Groesse wird angepasst"
-# Das Skript aus dem Image ausfuehren: es partitioniert neu und formatiert exFAT.
-HELPER="/Volumes/MACREC/GROESSE ANPASSEN.command"
-if [ ! -f "$HELPER" ]; then
-	echo "FEHLER: $HELPER nicht gefunden - ist der Stick gemountet?" >&2
-	exit 1
-fi
-sudo bash "$HELPER"
+sudo "$ROOT/tools/groesse-anpassen.sh" "$DEVICE"
 
 echo
 echo "Fertig."
+echo "macREC starten:"
+echo "  macOS:    /Volumes/MACREC/macREC - Aufnahmesoftware.app"
+echo "  Windows:  macREC.exe"

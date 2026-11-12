@@ -61,8 +61,8 @@ try {
 
 Write-Host ''
 Write-Host '==> Groesse wird angepasst'
-$script = Join-Path $root 'payload\groesse-anpassen.ps1'
-& powershell -NoProfile -ExecutionPolicy Bypass -File $script
+$script = Join-Path $root 'tools\groesse-anpassen.ps1'
+& powershell -NoProfile -ExecutionPolicy Bypass -File $script -Device $Device
 
 Write-Host ''
 Write-Host 'Fertig.'
