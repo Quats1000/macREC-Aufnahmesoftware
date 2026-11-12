@@ -40,6 +40,11 @@ echo "==> Windows-Programm und README kopieren"
 cp dist/macREC.exe "$STAGE/"
 cp dist/README.txt "$STAGE/"
 
+echo "==> Skripte fuer die Groessenanpassung beilegen"
+cp tools/payload/"GROESSE ANPASSEN.command" "$STAGE/"
+cp tools/payload/"GROESSE ANPASSEN.cmd" "$STAGE/"
+cp tools/payload/groesse-anpassen.ps1 "$STAGE/"
+
 # Legt ein Roh-Abbild mit MBR und einer exFAT- bzw. FAT32-Partition an.
 build_image() {
 	local img="$1" size_mb="$2" fstype="$3"
