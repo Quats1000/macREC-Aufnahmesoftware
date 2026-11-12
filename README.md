@@ -12,6 +12,8 @@
 
 **Prüfungsaufsicht – die Aufnahmesoftware für den USB-Stick**
 
+Project Page: https://links.legl3r.com/macrec-pruefungssoftware
+
 <img src="docs/screenshot-wizard.png" alt="Startbildschirm" width="420">
 
 [English below](#english)
