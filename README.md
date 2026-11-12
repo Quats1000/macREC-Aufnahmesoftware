@@ -218,14 +218,14 @@ Schriften: DM Sans (SIL Open Font License 1.1). Logo & Icon: Niklas Legler.
 macREC ist ein **Work in Progress** – Rückmeldungen, Fehlerberichte und
 Verbesserungsvorschläge sind sehr willkommen.
 
-- [Issues auf GitHub](https://github.com/niklaslegler/macREC/issues)
+- [Issues auf GitHub](https://github.com/Quats1000/macREC-Aufnahmesoftware/issues)
 - E-Mail an [niklaslegler.at/contact](https://niklaslegler.at/contact)
 
 ## Danke
 
 <div align="center">
 
-**macREC steht und fällt mit deiner Unterstützung.**
+**macREC ist kostenlos – aber ich nicht.**
 
 <a href="https://buymeacoffee.com/niklaslegler">
   <img src="https://img.shields.io/badge/Buy%20me%20a%20coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=white" alt="Buy me a coffee">
@@ -233,8 +233,11 @@ Verbesserungsvorschläge sind sehr willkommen.
 
 <br><br>
 
-Wenn dir macREC hilft und du die Weiterentwicklung unterstützen möchtest,
-freue ich mich über einen [Kaffee](https://buymeacoffee.com/niklaslegler)
+macREC wird von mir, Niklas, privat und ohne Geldgeber entwickelt. Wenn dir die
+Software hilft und du **mich persönlich** unterstützen magst – ich stehe nicht
+auf rosenden Beinen –, freue ich mich sehr über einen
+[Kaffee](https://buymeacoffee.com/niklaslegler). Die Spende landet bei mir,
+nicht in einem Projekt-Konto.
 
 </div>
 
@@ -288,8 +291,11 @@ powershell -ExecutionPolicy Bypass -File tools\burn-windows.ps1 -Device 2
   <img src="https://img.shields.io/badge/Buy%20me%20a%20coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=white" alt="Buy me a coffee">
 </a>
 
-If you like macREC and want to support further development, a
-[coffee](https://buymeacoffee.com/niklaslegler) is very welcome.
+macREC is free and built by one person in my spare time, with no funding
+behind it. If it's useful to you and you'd like to support **me personally**
+(I'm not exactly flush with money), a
+[coffee](https://buymeacoffee.com/niklaslegler) is very welcome — the donation
+goes to me, not to a project fund.
 
 ---
 
